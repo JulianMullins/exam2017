@@ -74,7 +74,15 @@ class Text(object):
         Example: an_instance_of_Text.create_moved_dict(2) would generate
         {'a': 'c', 'b': 'd', 'c':'e', ...}  
         '''
-        pass  # delete this line and replace with your code here
+        letter_dict = {}
+
+        for i in range(26):
+            if i >= 26-move:
+                letter_dict[chr(i+97)] = chr((i+97)-(26-move))
+            else:
+                letter_dict[chr(i+97)] = chr(i+97+move)
+                
+        return letter_dict
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -85,9 +93,23 @@ class Text(object):
         move: an integer, 0 <= move < 26
 
         Returns: the text (string) in which every character is moved
-             down the alphabet by the input move
+                down the alphabet by the input move
         '''
-        pass  # delete this line and replace with your code here
+        cipher_dict = self.create_moved_dict(move)
+        text = self.get_text()
+        cipher_text = ""
+
+        for i in range(len(text)):
+
+            if text[i].lower() in cipher_dict.keys():
+                if text[i].isupper():
+                    cipher_text += cipher_dict[text[i].lower()].upper()
+                else:
+                    cipher_text += cipher_dict[text[i]]
+            else:
+                cipher_text += text[i]
+
+        return cipher_text
 
 
 class PlainText(Text):
@@ -110,7 +132,10 @@ class PlainText(Text):
         Note: you must use the parent class constructor(__init__ function) 
         so less code is repeated
         '''
-        pass  # delete this line and replace with your code here
+        Text.__init__(self, text)
+        self.move = move
+        self.encrypting_dict = self.create_moved_dict(self.move)
+        self.encrypted_text = self.apply_move(self.move)
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -120,7 +145,7 @@ class PlainText(Text):
 
         Returns: self.move
         '''
-        pass  # delete this line and replace with your code here
+        return self.move
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -130,7 +155,7 @@ class PlainText(Text):
 
         Returns: a COPY of self.encrypting_dict
         '''
-        pass  # delete this line and replace with your code here
+        return self.encrypting_dict
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -140,7 +165,7 @@ class PlainText(Text):
 
         Returns: self.encrypted_text
         '''
-        pass  # delete this line and replace with your code here
+        return self.encrypted_text
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -154,7 +179,9 @@ class PlainText(Text):
 
         Returns: nothing
         '''
-        pass  # delete this line and replace with your code here
+        self.move = move
+        self.encrypting_dict = self.create_moved_dict(self.move)
+        self.encrypted_text = self.apply_move(self.move)
 
 
 class CipherText(Text):
@@ -171,7 +198,8 @@ class CipherText(Text):
             self.text (string, determined by input text)
             self.valid_words (list, determined using helper function load_wordlist)
         '''
-        pass  # delete this line and replace with your code here
+        self.text = text
+        self.valid_words = load_wordlist('words.txt')
 
 
     ### YOU NEED TO MODIFY THIS METHOD ###
@@ -189,8 +217,24 @@ class CipherText(Text):
         test case in main function below.
 
         '''
-        pass  # delete this line and replace with your code here
 
+        best_valid_word_count = 0
+        best_move = 0
+        best_decrypted_text = ""
+
+        for i in range(1, 26):
+            valid_word_count = 0
+            decrypted_text = self.apply_move(i)
+            decrypted_words = decrypted_text.split()
+
+            for word in decrypted_words:
+                if is_a_valid_word(self.valid_words, word):
+                    valid_word_count += 1
+            if valid_word_count > best_valid_word_count:
+                best_valid_word_count = valid_word_count
+                best_decrypted_text = decrypted_text
+                best_move = i
+        return (best_move, best_decrypted_text)
 
 
 ### DO NOT MODIFY THIS FUNCTION ###
@@ -201,12 +245,12 @@ def decrypt_joke():
 
 ### DO NOT MODIFY THIS FUNCTION ###
 def main():
-    # Example test case (PlainText)
+    #Example test case (PlainText)
     plaintext = PlainText('hello', 2)
     print('Expected Output: jgnnq')
     print('Actual Output:', plaintext.get_encrypted_text())
 
-    # Example test case (CipherText)
+    #Example test case (CipherText)
     ciphertext = CipherText('jgnnq')
     print('Expected Output:', (24, 'hello'))
     print('Actual Output:', ciphertext.decrypt_text())

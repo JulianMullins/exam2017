@@ -9,11 +9,36 @@ def speak_Chinese(number):
 
     Returns: a string that is the number in Chinese
     '''
-    pass
+    zero = trans[str(0)]
+    ten = trans[str(10)]
+    hundred = trans[str(100)]
+
+    if number < 0 or number > 999:
+        return "Number is out of range"
+    else:
+        if number <= 10 or number == 100:
+            return trans[str(number)]
+        elif number <= 19:
+            return ten + " " + trans[str(number)[1]]
+        elif number <= 99:
+            if str(number)[1] == str(0):
+                return trans[str(number)[0]] + " " + ten
+            else:
+                return trans[str(number)[0]] + " " + ten + " " + trans[str(number)[1]]
+        elif number <= 999:
+            if str(number)[1] == str(0):
+                if str(number)[2] == str(0):
+                    return trans[str(number)[0]] + " " + hundred
+                else:
+                    return trans[str(number)[0]] + " " + hundred + " " + zero + " " + trans[str(number)[2]]
+            else:
+                return trans[str(number)[0]] + " " + hundred + " " + trans[str(number)[1]] + " " + ten + " " + trans[str(number)[2]]
 
 
 # For testing
 def main():
+    print(speak_Chinese(9))
+    print('In Chinese: 9 = jiu')
     print(speak_Chinese(36))
     print('In Chinese: 36 = san shi liu')
     print(speak_Chinese(20))
